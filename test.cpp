@@ -1,13 +1,11 @@
-#include<iostream>
-#include <eigen-3.4.0/Eigen/Eigen>
-#include <iostream>
-#include <vector>
+#include "NeuralNet.hpp"
 
 int main()
 {
-    double radius;
-    std::cin >> radius;
-    std::cout<<(radius-2);
+    
+    std::vector<RowVector*> neuronLayers;
+    std::vector<uint> topology; //stores the design of the neural network
+    //topology = [];
     
     return 0;
 }
