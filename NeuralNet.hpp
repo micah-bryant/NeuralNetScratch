@@ -31,11 +31,12 @@ public:
 
     //TODO
         //implement smart pointers for these functions instead of normal pointers?
+        //change from stochastic GD to batch or mini-batch GD
 
-    std::vector<RowVector*> neuronLayers;
-    std::vector<RowVector*> cacheLayers;
-    std::vector<RowVector*> deltas;
-    std::vector<Matrix*> weights;
-    std::vector<uint> topology;
-    Scalar learningRate; 
+    std::vector<RowVector*> neuronLayers; //stores all the layers of the neural network
+    std::vector<RowVector*> cacheLayers; //stores the unactivated values of the layers
+    std::vector<RowVector*> deltas; //stores error contribution of each node
+    std::vector<Matrix*> weights; //stores the weights for the nodes
+    std::vector<uint> topology; //stores the design of the neural network
+    Scalar learningRate; //learning rate of the gradient descent
 };
