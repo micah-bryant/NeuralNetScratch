@@ -25,5 +25,68 @@ NeuralNetwork::NeuralNetwork(std::vector<uint> topology, Scalar learningRate)
             neuronLayers.back()->coeffRef(topology[i]) = 1.0;
             cacheLayers.back()->coeffRef(topology[i]) = 1.0;
         }
+
+        //initialize weights
+        if (i > 0){ //checks that it is not the input layer
+            if (i != topology.size()-1){ //checks that it is not the output layer
+                weights.push_back(new Matrix(topology[i-1]+1, topology[i]+1)); //creates Matrix that has size input+bias, output+bias
+                weights.back()->setRandom();//sets the weights to be randomly initalized
+                weights.back()->col(topology[i]).setZero();//sets all values in last column to be zero
+                weights.back()->coeffRef(topology[i-1],topology[i]) = 1.0;//ensures bias is still set to 1
+            }
+            else{
+                weights.push_back(new Matrix(topology[i-1]+1,topology[i]));//if output layer do not add bias neuron
+                weights.back()->setRandom();
+            }
+        }
     }
+}
+
+void NeuralNetwork::propagateForward(const RowVector& input)
+{
+    //sets input layer to be the input data
+    neuronLayers.front()->block(0, 0, 1, neuronLayers.front()->size()-1) = input;
+
+    //perform forward propagation and pass value to activation function
+    for (uint i = 1; i < topology.size(); i++){
+        (*neuronLayers[i]) = (*neuronLayers[i-1]) * (*weights[i-1]);
+        neuronLayers[i]->block(0, 0, 1, topology[i]).unaryExpr(std::ptr_fun(activationFunction));
+    }
+}
+
+void NeuralNetwork::propagateBackward(const RowVector& output)
+{
+    calcErrors(output);
+    updateWeights();
+}
+
+void NeuralNetwork::calcErrors(const RowVector& output)
+{
+    //does the calculation for the error of the output layer
+    (*deltas.back()) = output - (*neuronLayers.back());
+
+    //finds errors of hidden layers
+    for (uint i = topology.size()-2; i > 0; i--){
+        (*deltas[i]) = (*deltas[i+1]) * (weights[i]->transpose());
+    }
+}
+
+void NeuralNetwork::updateWeights()
+{
+    
+}
+
+void NeuralNetwork::train(std::vector<RowVector*> data)
+{
+
+}
+
+Scalar activationFunction(const Scalar& x)
+{
+    return tanhf(x);
+}
+
+Scalar activationFunctionDerivative(const Scalar& x)
+{
+    return 1 - (tanhf(x)*tanhf(x)); //derivative of tanh is 1-tanh^2
 }
